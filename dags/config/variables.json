@@ -1,0 +1,9 @@
+{
+    "variables_config": {
+        "var1": "value1",
+        "var2": [1, 2],
+        "var3": {
+            "k": "value3s"
+        }
+    }
+}
