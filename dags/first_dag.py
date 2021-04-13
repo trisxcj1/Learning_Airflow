@@ -2,7 +2,7 @@
 import airflow
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
-from airflow.operators.bash_operator import BashOperator
+from airflow.operators.python_operator import PythonOperator
 
 from datetime import timedelta
 
@@ -10,8 +10,8 @@ from datetime import timedelta
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': airflow.utile.dates.days_ago(1),
-    'email': ['airflow@example.com']
+    'start_date': airflow.utils.dates.days_ago(1),
+    'email': ['airflow@example.com'],
     'email_on_retry': False,
     'retries': 2,
     'retry_delay': timedelta(minutes=10)
@@ -46,5 +46,20 @@ task_3 = BashOperator(
     dag=dag
 )
 
+def print_fun(my_input):
+    
+    # should print in console
+    print(str(my_input))
+
+    # should print in Airflow logs
+    return str(my_input)
+
+task_4 = PythonOperator(
+    task_id='python_script',
+    python_callable=print_fun,
+    op_kwargs={'my_input': 'Hey, man! Wudditdooo?'},
+    dag=dag
+)
+
 # -- Dependencies/Task orchestration
-task_3 >> task_1 >> task_2
+task_3 >> [task_1, task_4] >> task_2
